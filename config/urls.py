@@ -1,0 +1,8 @@
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/v1/', include('apps.api.urls')),  # Endpoints de la API
+    path('', include('apps.web.urls')),  # Endpoints del frontend
+]
