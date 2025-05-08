@@ -11,4 +11,4 @@ class StatusCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Shipments)
 class Shipments(admin.ModelAdmin):
-    readonly_fields = ('total_amount',)
+    readonly_fields = ('qr_code', 'total_amount',)
