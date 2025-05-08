@@ -1,5 +1,6 @@
 from django.urls import path
+from . import views
 
 urlpatterns = [
-    # Aquí irán tus rutas de web
+    path('shipment/', views.create_shipment, name='shipment'),
 ]

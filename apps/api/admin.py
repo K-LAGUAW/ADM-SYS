@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import Shipments, StatusCategories, PaymentCategories
+from .models import Shipments, StatusCategories, PaymentCategories, PackageCategories
+
+@admin.register(PackageCategories)
+class PackageCategoriesAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(PaymentCategories)
 class PaymentCategoriesAdmin(admin.ModelAdmin):

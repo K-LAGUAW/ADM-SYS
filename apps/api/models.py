@@ -5,6 +5,21 @@ from django.core.files.base import ContentFile
 from django.db import models
 from io import BytesIO
 
+class PackageCategories(models.Model):
+    name = models.CharField(
+        max_length=100, verbose_name="Nombre"
+    )
+    mount = models.IntegerField(
+        verbose_name="Monto"
+    )
+
+    class Meta:
+        verbose_name = "categoria"
+        verbose_name_plural = "categorias de paquetes"
+
+    def __str__(self):
+        return f"{self.name} - {self.mount}"
+
 class PaymentCategories(models.Model):
     name = models.CharField(
         max_length=100, verbose_name="Nombre"
@@ -42,8 +57,8 @@ class Shipments(models.Model):
     tracking_number = models.CharField(
         max_length=11,
         unique=True,
+        editable=False,
         verbose_name="Número de seguimiento",
-        editable=False
     )
     qr_code = models.ImageField(
         upload_to='qrcodes/',
@@ -61,8 +76,8 @@ class Shipments(models.Model):
     status = models.ForeignKey(
         'StatusCategories',
         on_delete=models.CASCADE,
+        default=1,
         verbose_name="Estado",
-        default=1
     )
     sender = models.CharField(
         max_length=100,
@@ -76,15 +91,17 @@ class Shipments(models.Model):
         max_length=10,
         verbose_name="Teléfono"
     )
-    package_amount = models.IntegerField(
-        null=True,
+    package_amount = models.ForeignKey(
+        'PackageCategories',
+        on_delete=models.CASCADE,
         blank=True,
-        verbose_name="Importe de bultos"
+        null=True,
+        verbose_name="Importe de paquete"
     )
     envelope_amount = models.IntegerField(
         null=True,
         blank=True,
-        verbose_name="Importe de sobres"
+        verbose_name="Importe de sobre"
     )
     package_pickups = models.IntegerField(
         null=True,
@@ -99,6 +116,8 @@ class Shipments(models.Model):
     payment_type = models.ForeignKey(
         'PaymentCategories',
         on_delete=models.CASCADE,
+        blank=True,
+        null=True,
         verbose_name="Tipo de pago"
     )
 
@@ -134,7 +153,7 @@ class Shipments(models.Model):
                 version=1,
                 error_correction=qrcode.constants.ERROR_CORRECT_L,
                 box_size=10,
-                border=4,
+                border=2,
             )
             qr.add_data(self.tracking_number)
             qr.make(fit=True)
@@ -155,12 +174,13 @@ class Shipments(models.Model):
         def get_value(field):
             return getattr(self, field) or 0
         
+        package_mount = self.package_amount.mount if self.package_amount else 0
         base_calculation = (
-            get_value('package_amount') +
+            package_mount +
             int(get_value('envelope_amount') * self.ENVELOPE_RATE) +
             (get_value('package_pickups') * self.PICKUP_RATE)
         )
-        
+    
         self.total_amount = math.ceil(base_calculation / self.ROUNDING_STEP) * self.ROUNDING_STEP
 
     def __str__(self):

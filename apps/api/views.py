@@ -1,7 +1,7 @@
-from rest_framework import generics
-from .models import User
-from .serializers import UserSerializer
+from rest_framework import viewsets
+from .models import Shipments
+from .serializers import ShipmentsSerializer
 
-class UserListAPIView(generics.ListAPIView):
-    queryset = User.objects.all().order_by('-creation_date')
-    serializer_class = UserSerializer
+class ShipmentsViewSet(viewsets.ModelViewSet):
+    queryset = Shipments.objects.all().order_by('-creation_date')
+    serializer_class = ShipmentsSerializer
