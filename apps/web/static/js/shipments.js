@@ -45,7 +45,7 @@ function formatShipmentDetails(d) {
     `;
 }
 
-async function printQR(tracking_number, qr_code) {
+async function printQR(tracking_number, qr_code, sender, recipient) {
     const cargaUtil = {
         "serial": "",
         "nombreImpresora": getCookie('printer'),
@@ -58,6 +58,12 @@ async function printQR(tracking_number, qr_code) {
                 "nombre": "EstablecerAlineacion",
                 "argumentos": [
                     1
+                ]
+            },
+            {
+                "nombre": "EscribirTexto",
+                "argumentos": [
+                    "\n\n\n"
                 ]
             },
             {
@@ -80,6 +86,36 @@ async function printQR(tracking_number, qr_code) {
                 ]
             },
             {
+                "nombre": "EstablecerAlineacion",
+                "argumentos": [
+                  0
+                ]
+            },
+            {
+                "nombre": "EscribirTexto",
+                "argumentos": [
+                    "Remitente: " + sender + "\n"      
+                ]
+            },
+            {
+                "nombre": "EscribirTexto",
+                "argumentos": [
+                  "\n\n"
+                ]
+            },
+            {
+                "nombre": "EscribirTexto",
+                "argumentos": [
+                    "Destinatario: " + recipient + "\n"      
+                ]
+            },
+            {
+                "nombre": "EscribirTexto",
+                "argumentos": [
+                  "\n\n\n"
+                ]
+            },
+            {
                 "nombre": "DescargarImagenDeInternetEImprimir",
                 "argumentos": [
                     qr_code,
@@ -92,6 +128,12 @@ async function printQR(tracking_number, qr_code) {
                 "nombre": "EscribirTexto",
                 "argumentos": [
                     "\n\n\n\n\n"
+                ]
+            },
+            {
+                "nombre": "Corte",
+                "argumentos": [
+                  8
                 ]
             }
         ]
@@ -235,7 +277,7 @@ async function handleAddFormClick() {
         }
         const data = await response.json();
 
-        printQR(data.tracking_number, data.qr_code);
+        printQR(data.tracking_number, data.qr_code, data.sender, data.recipient);
         addModal.hide();
         location.reload();
     } catch (error) {
