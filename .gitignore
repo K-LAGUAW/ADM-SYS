@@ -1,4 +1,4 @@
 env/
-media/qrcodes/
+media/
 __pycache__/
 *.sqlite3
